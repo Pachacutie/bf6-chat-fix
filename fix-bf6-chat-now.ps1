@@ -10,14 +10,14 @@ $ctf = Get-Process ctfmon -ErrorAction SilentlyContinue
 
 if ($ti) {
     Stop-Process -Name TextInputHost -Force
-    Write-Host "[+] Killed TextInputHost.exe (PID: $($ti.Id))" -ForegroundColor Green
+    Write-Host "[+] Killed TextInputHost.exe (PID: $($ti.Id -join ', '))" -ForegroundColor Green
 } else {
     Write-Host "[*] TextInputHost.exe not running" -ForegroundColor Cyan
 }
 
 if ($ctf) {
     Stop-Process -Name ctfmon -Force
-    Write-Host "[+] Killed ctfmon.exe (PID: $($ctf.Id)) — will auto-restart" -ForegroundColor Green
+    Write-Host "[+] Killed ctfmon.exe (PID: $($ctf.Id -join ', ')) - will auto-restart" -ForegroundColor Green
 } else {
     Write-Host "[*] ctfmon.exe not running" -ForegroundColor Cyan
 }

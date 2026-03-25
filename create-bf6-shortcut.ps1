@@ -1,3 +1,4 @@
+#Requires -RunAsAdministrator
 <#
 .SYNOPSIS
     Creates a desktop shortcut for the BF6 Chat Fix Launcher that auto-elevates to admin.
@@ -6,10 +7,11 @@
 #>
 
 $TaskName = 'BF6_ChatFix_Launcher'
-$ScriptPath = 'D:\Games\IT\launch-bf6-chatfix.ps1'
+$ScriptPath = Join-Path $PSScriptRoot 'launch-bf6-chatfix.ps1'
 $DesktopPath = [Environment]::GetFolderPath('Desktop')
 $ShortcutPath = Join-Path $DesktopPath 'BF6 Chat Fix.lnk'
-$BF6Icon = 'D:\Games\EA Games\Battlefield 6\bf6.exe'
+# --- CONFIGURE THIS: Set to your BF6 install path ---
+$BF6Icon = 'C:\Program Files\EA Games\Battlefield 6\bf6.exe'
 
 # --- Step 1: Create a Scheduled Task that runs the script as admin ---
 $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-ExecutionPolicy Bypass -WindowStyle Normal -File `"$ScriptPath`""
@@ -30,7 +32,7 @@ $WshShell = New-Object -ComObject WScript.Shell
 $shortcut = $WshShell.CreateShortcut($ShortcutPath)
 $shortcut.TargetPath = 'schtasks.exe'
 $shortcut.Arguments = "/run /tn `"$TaskName`""
-$shortcut.WorkingDirectory = 'D:\Games\IT'
+$shortcut.WorkingDirectory = $PSScriptRoot
 $shortcut.Description = 'Launch BF6 with chat input fix (auto-admin)'
 $shortcut.WindowStyle = 7  # Minimized (hides the schtasks window)
 

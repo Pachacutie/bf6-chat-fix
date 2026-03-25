@@ -24,9 +24,8 @@ param(
     [switch]$DryRun
 )
 
-$ErrorActionPreference = 'SilentlyContinue'
-
-$BF6Path = 'D:\Games\EA Games\Battlefield 6\bf6.exe'
+# --- CONFIGURE THIS: Set to your BF6 install path ---
+$BF6Path = 'C:\Program Files\EA Games\Battlefield 6\bf6.exe'
 $BF6Process = 'bf6'
 
 function Write-Status($msg) { Write-Host "[*] $msg" -ForegroundColor Cyan }
@@ -49,7 +48,7 @@ if ($DryRun) {
 # --- Step 1: Kill TextInputHost.exe ---
 $textInput = Get-Process TextInputHost -ErrorAction SilentlyContinue
 if ($textInput) {
-    Write-Status "TextInputHost.exe found (PID: $($textInput.Id))"
+    Write-Status "TextInputHost.exe found (PID: $($textInput.Id -join ', '))"
     if (-not $DryRun) {
         Stop-Process -Name TextInputHost -Force -ErrorAction SilentlyContinue
         Start-Sleep -Milliseconds 500
@@ -69,11 +68,17 @@ else {
 # --- Step 2: Kill ctfmon.exe (it auto-restarts after session) ---
 $ctfmon = Get-Process ctfmon -ErrorAction SilentlyContinue
 if ($ctfmon) {
-    Write-Status "ctfmon.exe found (PID: $($ctfmon.Id))"
+    Write-Status "ctfmon.exe found (PID: $($ctfmon.Id -join ', '))"
     if (-not $DryRun) {
         Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue
         Start-Sleep -Milliseconds 500
-        Write-Success 'ctfmon.exe killed (auto-restarts after gaming session)'
+        $ctfCheck = Get-Process ctfmon -ErrorAction SilentlyContinue
+        if (-not $ctfCheck) {
+            Write-Success 'ctfmon.exe killed (auto-restarts after gaming session)'
+        }
+        else {
+            Write-Warn 'ctfmon.exe survived kill attempt - will monitor'
+        }
     }
 }
 else {
@@ -90,8 +95,18 @@ if (-not (Test-Path $BF6Path)) {
 Write-Host ''
 Write-Status 'Launching BF6...'
 if (-not $DryRun) {
-    Start-Process $BF6Path
+    try {
+        Start-Process $BF6Path -ErrorAction Stop
+    }
+    catch {
+        Write-Fail "Failed to launch BF6: $_"
+        exit 1
+    }
     Start-Sleep -Seconds 5
+    $launched = Get-Process $BF6Process -ErrorAction SilentlyContinue
+    if (-not $launched) {
+        Write-Warn 'BF6 process not detected yet - will monitor anyway (anti-cheat may delay startup)'
+    }
 }
 
 # --- Step 4: Monitor loop - keep TextInputHost dead while BF6 runs ---

@@ -67,7 +67,7 @@ powershell -ExecutionPolicy Bypass -File create-bf6-shortcut.ps1
 
 This creates a Scheduled Task (`BF6_ChatFix_Launcher`) that runs as admin, and a desktop shortcut that triggers it.
 
-> **Note:** Edit the `$BF6Path` variable in `launch-bf6-chatfix.ps1` if your game is installed somewhere other than `D:\Games\EA Games\Battlefield 6\bf6.exe`.
+> **Note:** Edit the `$BF6Path` variable in `launch-bf6-chatfix.ps1` and the `$BF6Icon` variable in `create-bf6-shortcut.ps1` to match your BF6 install path. Look for the `CONFIGURE THIS` comments at the top of each script.
 
 ## What DICE/EA Could Do
 
@@ -82,7 +82,7 @@ All three are minimal changes — likely under 20 lines of code in Frostbite's U
 ## Affected Systems
 
 - **OS:** Windows 11 24H2+ (build 26100+)
-- **Game:** Battlefield 6 (all versions as of March 2025)
+- **Game:** Battlefield 6 (all versions as of March 2026)
 - **Not affected:** Windows 10, Windows 11 23H2 and earlier
 
 ## Permanent Alternatives
